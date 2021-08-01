@@ -1,6 +1,6 @@
 pushd %~dp0
 if not exist win (
-    mkdir build
+    mkdir win
 ) else (
     del /S /Q /F win
     rd /S /Q win
