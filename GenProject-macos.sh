@@ -1,9 +1,8 @@
 # /bin/bash
 
 
-if [ ! -d"./macos" ];then
-  mkdir ./macos
-else
-  rm -rf ./macos
-  cmake ..
-fi
+rm -rf macos bin
+mkdir macos
+cd macos 
+cmake -G 'Xcode' ..
+

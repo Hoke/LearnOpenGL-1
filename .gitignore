@@ -17,5 +17,6 @@ _deps
 bin/
 win/
 macos/
+macos-xcode/
 linux/
 build
