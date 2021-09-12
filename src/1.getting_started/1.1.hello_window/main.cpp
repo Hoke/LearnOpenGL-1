@@ -25,7 +25,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    //
+    // 创建窗口
     GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, title, NULL, NULL);
     if (window == NULL)
     {
@@ -41,7 +41,7 @@ int main()
         std::cout << "Failed to init GLAD" << std::endl;
         return -1;
     }
-
+    //  视口大小
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     //  监听窗口变化
