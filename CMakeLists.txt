@@ -92,6 +92,13 @@ set(1.getting_started
     2.1.hello_triangle
     2.2.hello_triangle_indexed
     2.3.hello_triangle_2
+    2.4.get_opengl_info
+    2.5.hello_triangle_exercise
+    3.1.shader_uniform
+    3.2.shaders_interpolation
+    3.3.shader_class
+    3.4_shaders_exercise1
+    3.5_shaders_exercise2
     4.1.textures
 )
 
