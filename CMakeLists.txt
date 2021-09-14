@@ -100,6 +100,11 @@ set(1.getting_started
     3.4_shaders_exercise1
     3.5_shaders_exercise2
     4.1.textures
+    4.2.textures_combine
+    4.3.textures_exercise1
+    4.4.textures_exercise2
+    4.5.textures_exercise3
+    4.6.textures_exercise4
 )
 
 

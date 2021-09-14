@@ -7,6 +7,13 @@
 
 
 
+//尝试用不同的纹理环绕方式，设定一个从0.0f到2.0f范围内的（而不是原来的0.0f到1.0f）纹理坐标。试试看能不能在箱子的角落放置4个笑脸
+
+// 修改纹理坐标为2.0
+// 纹理环绕模式为GL_CLAMP_TO_EDGE
+// 纹理1 环绕模式为GL_CLAMP_TO_EDGE 然后线性过滤铺开
+//  笑脸纹理 用repeat模式 线性铺开
+
 
 void frameBufferResize(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -17,9 +24,9 @@ const char* WINDOW_TITLE = "Textures";
 
 int main()
 {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -42,14 +49,14 @@ int main()
     }
 
     // create shader
-    Shader shader("4.1.texture.vs", "4.1.texture.fs");
+    Shader shader("4.4.shader.vs", "4.4.shader.fs");
 
     float vertices[] = {
         // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f  // top left 
     };
 
     unsigned int indices[] = {
@@ -93,12 +100,16 @@ int main()
     // 绑定纹理
     glBindTexture(GL_TEXTURE_2D, texture);
     // 设置纹理的环绕,过滤方式
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // GL_REPEAT	对纹理的默认行为。重复纹理图像。
+    // GL_MIRRORED_REPEAT	和GL_REPEAT一样，但每次重复图片是镜像放置的。
+    // GL_CLAMP_TO_EDGE	纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。
+    // GL_CLAMP_TO_BORDER	超出的坐标为用户指定的边缘颜色。
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 
     int width, height, nrChannels;
     unsigned char* data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
@@ -118,7 +129,7 @@ int main()
         //要使用多级渐远纹理，我们必须手动设置所有不同的图像（不断递增第二个参数）。或者，直接在生成纹理之后调用glGenerateMipmap。这
         //会为当前绑定的纹理自动生成所有需要的多级渐远纹理
         glGenerateMipmap(GL_TEXTURE_2D);
-    } 
+    }
     else
     {
         std::cout << "Failed to load texture" << std::endl;
@@ -126,6 +137,55 @@ int main()
     }
     // 已经读取到数据，释放加载内存
     stbi_image_free(data);
+
+    // 颠倒一下
+    // 因为OpenGL要求y轴0.0坐标是在图片的底部的，但是图片的y轴0.0坐标通常在顶部。很幸运，stb_image.h能够在图像加载时帮助我们翻转y轴
+    stbi_set_flip_vertically_on_load(true);
+    unsigned int texture2;
+    // 生成opengl纹理
+    glGenTextures(1, &texture2);
+    // 绑定纹理
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    data = stbi_load(FileSystem::getPath("resources/textures/awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        // 生成纹理数据
+        // 第一个参数指定纹理目标
+        // 第二个参数指定多级纹理的级别
+        // 第三个参数告诉OpenGL我们希望把纹理储存为何种格式
+        // 第四个和第五个参数设置最终的纹理的宽度和高度
+        // 下个参数应该总是被设为0（历史遗留的问题）
+        // 第七第八个参数定义了源图的格式和数据类型。我们使用RGB值加载这个图像，并把它们储存为char(byte)数组，我们将会传入对应值。
+        // 真正的纹理数据
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        //当调用glTexImage2D时，当前绑定的纹理对象就会被附加上纹理图像。然而，目前只有基本级别(Base - level)的纹理图像被加载了，如果
+        //要使用多级渐远纹理，我们必须手动设置所有不同的图像（不断递增第二个参数）。或者，直接在生成纹理之后调用glGenerateMipmap。这
+        //会为当前绑定的纹理自动生成所有需要的多级渐远纹理
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+        return -1;
+    }
+    // 已经读取到数据，释放加载内存
+    stbi_image_free(data);
+
+    shader.use(); // don't forget to activate/use the shader before setting uniforms!
+    // 通过使用glUniform1i设置每个采样器的方式告诉OpenGL每个着色器采样器属于哪个纹理单元。
+    // 我们只需要设置一次即可，所以这个会放在渲染循环的前面
+    // either set it manually like so:
+    glUniform1i(glGetUniformLocation(shader.ID, "ourTexture"), 0);
+    // or set it via the texture class
+    shader.setInt("texture2", 1);
+    // 纹理0号和纹理1号
 
     while (!glfwWindowShouldClose(window))
     {
@@ -136,7 +196,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // bind Texture
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         // render container
         shader.use();
