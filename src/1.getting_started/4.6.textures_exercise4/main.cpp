@@ -7,6 +7,8 @@
 
 //使用一个uniform变量作为mix函数的第三个参数来改变两个纹理可见度，使用上和下键来改变箱子或笑脸的可见度：
 
+// 扩展:使用左右键来改变笑脸方向
+
 
 void frameBufferResize(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -16,6 +18,8 @@ const int SCREEN_HEIGHT = 600;
 const char* WINDOW_TITLE = "Textures";
 
 float mixValue = 0.2f;
+// 笑脸方向
+float dirValue = 1.0f;
 
 int main()
 {
@@ -195,6 +199,8 @@ int main()
         
         // 设置混合的值
         shader.setFloat("mixValue", mixValue);
+        // 设置方向值的uniform
+        shader.setFloat("dir", dirValue);
         // render container
         shader.use();
         glBindVertexArray(VAO);
@@ -239,6 +245,12 @@ void processInput(GLFWwindow* window)
         {
             mixValue = 0.0f;
         }
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        dirValue = 1.0f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        dirValue = -1.0f;
     }
 }
 
