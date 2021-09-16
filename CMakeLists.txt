@@ -75,6 +75,8 @@ set(LIBS ${LIBS} assimp)
 
 
 
+
+
 # GLM GLFW3 ASSIMP GLAD
 set(CHAPTERS
     1.getting_started
@@ -105,6 +107,7 @@ set(1.getting_started
     4.4.textures_exercise2
     4.5.textures_exercise3
     4.6.textures_exercise4
+    4.7.imgui_test
 )
 
 
@@ -119,8 +122,13 @@ include_directories(
                     ${CMAKE_SOURCE_DIR}/vendor/glad/include/
                     ${CMAKE_SOURCE_DIR}/vendor/glfw/include/
                     ${CMAKE_SOURCE_DIR}/vendor/glm/
-                    ${CMAKE_SOURCE_DIR}/vendor/stb/)
+                    ${CMAKE_SOURCE_DIR}/vendor/stb/
+)
 
+include_directories(
+    ${CMAKE_SOURCE_DIR}/vendor/imgui
+    ${CMAKE_SOURCE_DIR}/vendor/imgui/backends
+)
 #  create a project for per tutorial
 foreach(CHAPTER ${CHAPTERS})
     message("======start process chapter ${CHAPTER}======")
@@ -129,6 +137,9 @@ foreach(CHAPTER ${CHAPTERS})
         file(GLOB SOURCE
             "src/${CHAPTER}/${DEMO}/*.h"
             "src/${CHAPTER}/${DEMO}/*.cpp"
+            "vendor/imgui/*.cpp"
+            "vendor/imgui/backends/imgui_impl_glfw.cpp"
+            "vendor/imgui/backends/imgui_impl_opengl3.cpp"
         )
 
         set(NAME "${CHAPTER}_${DEMO}")
@@ -137,7 +148,10 @@ foreach(CHAPTER ${CHAPTERS})
         add_executable(${NAME} ${GLAD_DOT_C} ${SOURCE} )
         # 链接
         message("${NAME} lib: ${LIBS}")
-        target_link_libraries(${NAME} ${LIBS})
+        target_link_libraries(
+            ${NAME}
+            ${LIBS}
+        )
 
         if(WIN32)
             set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${CHAPTER}/${DEMO}")
