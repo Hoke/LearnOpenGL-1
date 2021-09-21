@@ -116,13 +116,17 @@ int main()
     ImVec4 traingle_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     ImVec4 clear_color = ImVec4(0.2f, 0.30f, 0.30f, 1.00f);
     
+    
+    
 
-    float startTime = GetCurrentTime() / 1000.0f;
+    std::cout << glfwGetTime() << std::endl;
+    float startTime = glfwGetTime();
     long passedFrames = 0;
+    
     while (!glfwWindowShouldClose(window))
     {
-
-        float currentTime = GetCurrentTime() / 1000.0f;
+        
+        float currentTime = glfwGetTime();
         float totalTime = currentTime - startTime;
         long targetTotalFrames = totalTime / (1.0 / 60);
 

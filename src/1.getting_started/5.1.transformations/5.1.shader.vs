@@ -4,6 +4,7 @@ layout (location = 1) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 
+// 变换矩阵
 uniform mat4 transform;
 
 void main()
