@@ -170,19 +170,19 @@ int main()
         shader.use();
         
         //     GLM库从0.9.9版本起，默认会将矩阵类型初始化为一个零矩阵（所有元素均为0），而不是单位矩阵（对角元素为1，其它元素为0）。如果你使用的是0.9.9或0.9.9以上的版本，你需要将所有的矩阵初始化改为 glm::mat4 mat = glm::mat4(1.0f)
-        glm::mat4 trans = glm::mat4(1.0f);
+        glm::mat4 transform = glm::mat4(1.0f);
         // 缩放0.5 绕z轴旋转90度
 //        trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 //        trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
         
         
-        trans  = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+        transform  = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
         
         
         // 查询shader中变换矩阵uniform的位置,传值
         unsigned int transformLocation = glGetUniformLocation(shader.ID, "transform");
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));
         // 第一个参数是uniform的位置
         // 第二个参数是发送几个
         // 第三个参数以矩阵是否需要行列交换，GLM默认就是列主序的，这里不需要
@@ -197,14 +197,15 @@ int main()
         
         
         // 画第二个箱子
-        trans = glm::mat4(1.0f);
+        
+        
+        transform = glm::mat4(1.0f);
+        glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
         float scale = cos(glfwGetTime());
-//        if (scale < 0)
-//        {
-//            scale = 1.0f - scale * -1;
-//        }
-        trans = glm::scale(trans, glm::vec3(scale, scale, scale));
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, &trans[0][0]);
+        transform = glm::scale(transform, glm::vec3(scale, scale, scale));
+//        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(transform));
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, &transform[0][0]);
+        
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
