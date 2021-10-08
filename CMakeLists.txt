@@ -111,6 +111,7 @@ set(1.getting_started
     5.1.transformations
     5.2.transformations_exercise1
     5.3.transformations_exercise2
+    6.1.coordinate_system
 )
 
 
